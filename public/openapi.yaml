@@ -1,0 +1,449 @@
+openapi: 3.0.3
+info:
+  title: Sistema de Gestao de Orcamentos API
+  description: >-
+    API REST para criacao, consulta, atualizacao e remocao de orcamentos com
+    itens e calculo de total.
+
+    Fluxo recomendado para avaliacao rapida:
+    1) Execute POST /orcamentos para criar um registro.
+    2) Execute GET /orcamentos para validar listagem e itens.
+    3) Execute GET /orcamentos/{id}, PUT /orcamentos/{id} e DELETE /orcamentos/{id}
+    para validar ciclo completo CRUD.
+  version: 1.0.0
+  contact:
+    name: Time Backend
+servers:
+  - url: http://localhost:8000
+    description: Ambiente local Docker
+tags:
+  - name: Orcamentos
+    description: Operacoes de ciclo de vida do orcamento
+paths:
+  /orcamentos:
+    get:
+      operationId: listarOrcamentos
+      summary: Lista orcamentos
+      description: Retorna todos os orcamentos com seus itens e valores agregados.
+      tags: [Orcamentos]
+      responses:
+        "200":
+          description: Lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessListResponse"
+              examples:
+                sucessoComLista:
+                  $ref: "#/components/examples/ListaOrcamentosSucesso"
+        "500":
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                erroBanco:
+                  $ref: "#/components/examples/ErroInterno"
+    post:
+      operationId: criarOrcamento
+      summary: Cria um novo orcamento
+      description: Cria um orcamento, insere itens e calcula o total automaticamente.
+      tags: [Orcamentos]
+      requestBody:
+        required: true
+        description: Payload de criacao do orcamento.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrcamentoRequest"
+            example:
+              nomeCliente: Cliente Teste
+              data: 2026-03-23
+              itens:
+                - produto_id: 1
+                  quantidade: 2
+                - produto_id: 2
+                  quantidade: 1
+      responses:
+        "201":
+          description: Orcamento criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateOrcamentoSuccessResponse"
+              examples:
+                criado:
+                  $ref: "#/components/examples/CriarOrcamentoSucesso"
+        "400":
+          description: Erro de validacao ou JSON invalido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                jsonInvalido:
+                  $ref: "#/components/examples/ErroJsonInvalido"
+                validacao:
+                  $ref: "#/components/examples/ErroValidacao"
+
+  /orcamentos/{id}:
+    get:
+      operationId: buscarOrcamentoPorId
+      summary: Busca orcamento por ID
+      description: Retorna um unico orcamento pelo identificador informado.
+      tags: [Orcamentos]
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      responses:
+        "200":
+          description: Orcamento encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessItemResponse"
+              examples:
+                encontrado:
+                  $ref: "#/components/examples/BuscarOrcamentoSucesso"
+        "404":
+          description: Orcamento nao encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                naoEncontrado:
+                  $ref: "#/components/examples/ErroOrcamentoNaoEncontrado"
+        "500":
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                erroBanco:
+                  $ref: "#/components/examples/ErroInterno"
+
+    put:
+      operationId: atualizarOrcamento
+      summary: Atualiza orcamento por ID
+      description: Atualiza dados gerais e itens de um orcamento existente.
+      tags: [Orcamentos]
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      requestBody:
+        required: true
+        description: Payload completo para atualizacao do orcamento.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateOrcamentoRequest"
+            example:
+              nomeCliente: Cliente Atualizado
+              data: 2026-03-23
+              itens:
+                - produto_id: 1
+                  quantidade: 1
+      responses:
+        "200":
+          description: Orcamento atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericSuccessResponse"
+              examples:
+                atualizado:
+                  $ref: "#/components/examples/AtualizarOrcamentoSucesso"
+        "400":
+          description: Erro de validacao ou JSON invalido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                jsonInvalido:
+                  $ref: "#/components/examples/ErroJsonInvalido"
+                validacao:
+                  $ref: "#/components/examples/ErroValidacao"
+
+    delete:
+      operationId: deletarOrcamento
+      summary: Remove orcamento por ID
+      description: Exclui um orcamento e seus itens relacionados.
+      tags: [Orcamentos]
+      parameters:
+        - $ref: "#/components/parameters/IdPathParam"
+      responses:
+        "200":
+          description: Orcamento removido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericSuccessResponse"
+              examples:
+                removido:
+                  $ref: "#/components/examples/DeletarOrcamentoSucesso"
+        "500":
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                erroBanco:
+                  $ref: "#/components/examples/ErroInterno"
+
+components:
+  examples:
+    ListaOrcamentosSucesso:
+      value:
+        success: true
+        message: ""
+        data:
+          - id: 2
+            nome_cliente: HIT
+            data_solicitacao: "2026-03-22"
+            total: 40
+            itens:
+              - quantidade: 2
+                subtotal: 20
+                produto: Mouse
+                valor: 10
+              - quantidade: 1
+                subtotal: 20
+                produto: Teclado
+                valor: 20
+        error: null
+
+    CriarOrcamentoSucesso:
+      value:
+        success: true
+        message: Orcamento criado com sucesso
+        data:
+          id: 3
+        error: null
+
+    BuscarOrcamentoSucesso:
+      value:
+        success: true
+        message: ""
+        data:
+          id: 2
+          nome_cliente: HIT
+          data_solicitacao: "2026-03-22"
+          total: 40
+          itens:
+            - quantidade: 2
+              subtotal: 20
+              produto: Mouse
+              valor: 10
+            - quantidade: 1
+              subtotal: 20
+              produto: Teclado
+              valor: 20
+        error: null
+
+    AtualizarOrcamentoSucesso:
+      value:
+        success: true
+        message: Orcamento atualizado
+        data: null
+        error: null
+
+    DeletarOrcamentoSucesso:
+      value:
+        success: true
+        message: Orcamento deletado
+        data: null
+        error: null
+
+    ErroJsonInvalido:
+      value:
+        success: false
+        message: JSON invalido
+        data: null
+        error: JSON invalido
+
+    ErroValidacao:
+      value:
+        success: false
+        message: Nome do cliente e obrigatorio
+        data: null
+        error: Nome do cliente e obrigatorio
+
+    ErroOrcamentoNaoEncontrado:
+      value:
+        success: false
+        message: Orcamento nao encontrado
+        data: null
+        error: Orcamento nao encontrado
+
+    ErroInterno:
+      value:
+        success: false
+        message: SQLSTATE[HY000] [2002] Connection refused
+        data: null
+        error: SQLSTATE[HY000] [2002] Connection refused
+
+  parameters:
+    IdPathParam:
+      name: id
+      in: path
+      required: true
+      example: 2
+      schema:
+        type: integer
+        minimum: 1
+      description: ID do orcamento
+
+  schemas:
+    ItemInput:
+      type: object
+      description: Item de produto usado na criacao/atualizacao do orcamento.
+      required: [produto_id, quantidade]
+      properties:
+        produto_id:
+          type: integer
+          minimum: 1
+        quantidade:
+          type: integer
+          minimum: 1
+
+    CreateOrcamentoRequest:
+      type: object
+      description: Requisicao para criacao de um orcamento.
+      required: [nomeCliente, data, itens]
+      properties:
+        nomeCliente:
+          type: string
+          minLength: 1
+        data:
+          type: string
+          format: date
+        itens:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ItemInput"
+
+    UpdateOrcamentoRequest:
+      description: Requisicao para atualizacao completa de um orcamento.
+      allOf:
+        - $ref: "#/components/schemas/CreateOrcamentoRequest"
+
+    OrcamentoItem:
+      type: object
+      description: Item retornado na listagem/consulta de orcamentos.
+      properties:
+        quantidade:
+          type: integer
+        subtotal:
+          type: number
+          format: float
+        produto:
+          type: string
+        valor:
+          type: number
+          format: float
+
+    Orcamento:
+      type: object
+      description: Representacao de orcamento com itens.
+      properties:
+        id:
+          type: integer
+        nome_cliente:
+          type: string
+        data_solicitacao:
+          type: string
+          format: date
+        total:
+          type: number
+          format: float
+        itens:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrcamentoItem"
+
+    CreateData:
+      type: object
+      description: Conteudo retornado na criacao do orcamento.
+      properties:
+        id:
+          type: integer
+
+    GenericSuccessResponse:
+      type: object
+      description: Envelope padrao de sucesso da API.
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+        data:
+          nullable: true
+        error:
+          nullable: true
+
+    CreateOrcamentoSuccessResponse:
+      type: object
+      description: Resposta de sucesso para criacao de orcamento.
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Orcamento criado com sucesso
+        data:
+          $ref: "#/components/schemas/CreateData"
+        error:
+          nullable: true
+
+    SuccessListResponse:
+      type: object
+      description: Resposta de sucesso para listagem.
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ""
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Orcamento"
+        error:
+          nullable: true
+
+    SuccessItemResponse:
+      type: object
+      description: Resposta de sucesso para consulta por ID.
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: ""
+        data:
+          $ref: "#/components/schemas/Orcamento"
+        error:
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      description: Envelope padrao de erro da API.
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+        data:
+          nullable: true
+          example: null
+        error:
+          type: string

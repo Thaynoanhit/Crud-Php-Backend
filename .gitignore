@@ -1,0 +1,48 @@
+# PHPUnit
+.phpunit.result.cache
+coverage/
+coverage.xml
+clover.xml
+junit.xml
+
+# Composer
+vendor/
+
+# Environment
+.env
+.env.local
+.env.*
+.env.*.local
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# PHP tooling cache
+.php-cs-fixer.cache
+.php_cs.cache
+.phpstan.cache
+.phpstan/
+.psalm/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+db_data/
+*.sqlite
+*.sqlite3
+*.db
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.temp
+*.pid
