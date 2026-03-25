@@ -1,18 +1,18 @@
-# Sistema de Orcamentos - Backend
+# 📊 Sistema de Gestão de Orçamentos
 
 API REST em PHP para gerenciamento de orcamentos com itens, calculo automatico de total e persistencia em MySQL.
 
-## O que faz
+## 📦 O que faz
 
-- Criar orcamento com nome do cliente, data e itens
-- Listar produtos para preenchimento do formulario
-- Calcular total automaticamente no backend
-- Listar, buscar, atualizar e deletar orcamentos
-- Paginar e filtrar listagem de orcamentos
-- Validar dados obrigatorios e integridade dos itens
-- Executar transacoes com rollback em caso de erro
+- ✅ Criar orçamento com nome do cliente, data e lista de produtos
+- ✅ Listar produtos para preenchimento do formulário
+- ✅ Cálculo automático do total
+- ✅ Listar, buscar, atualizar e deletar orçamentos
+- ✅ Paginação e filtros na listagem de orçamentos
+- ✅ Validações de dados (cliente, data, produtos, quantidade)
+- ✅ Transações ACID (rollback automático em caso de erro)
 
-## Arquitetura (Backend)
+## 🧠 Arquitetura (Backend)
 
 ```
 Controller -> Service -> Repository -> Database
@@ -48,10 +48,10 @@ docker compose exec php vendor/bin/phpunit
 
 ## Enderecos locais
 
-- Documentacao interativa: `http://localhost:8000/docs/`
-- Swagger alternativo: `http://localhost:8000/docs/swagger.html`
-- API base: `http://localhost:8000`
-- PhpMyAdmin: `http://localhost:8080` (root/root)
+- 📚 Documentacao interativa: `http://localhost:8000/docs/`
+- 📚 Swagger alternativo: `http://localhost:8000/docs/swagger.html`
+- 🔗 API base: `http://localhost:8000/orcamentos`
+- 📊PhpMyAdmin: `http://localhost:8080` (root/root)
 
 ## Validacoes
 
@@ -61,7 +61,7 @@ docker compose exec php vendor/bin/phpunit
 - Produto deve existir
 - Quantidade > 0
 
-## Testes
+## 🧪 Testes
 
 8 testes PHPUnit (Service + integração HTTP):
 
