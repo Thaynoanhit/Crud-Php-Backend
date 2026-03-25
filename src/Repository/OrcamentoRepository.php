@@ -71,16 +71,6 @@ class OrcamentoRepository {
     return $result ?: null;
     }
 
-    public function getAllOrcamentos() {
-        $stmt = $this->pdo->query("
-            SELECT id, nome_cliente, data_solicitacao, total
-            FROM orcamentos 
-            ORDER BY data_solicitacao ASC, id ASC
-        ");
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-
     public function getOrcamentosPaginated(
         int $offset,
         int $limit,

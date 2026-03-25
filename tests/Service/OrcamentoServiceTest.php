@@ -200,4 +200,53 @@ class OrcamentoServiceTest extends TestCase {
         $this->assertSame(1, $resultado['meta']['total_pages']);
         $this->assertCount(1, $resultado['data']);
     }
+
+    public function testCriarOrcamentoAceitaDataComHifenNoPadraoBrasileiro() {
+
+        $repo = $this->createMock(OrcamentoRepository::class);
+        $pdo = $this->createMock(\PDO::class);
+
+        $pdo->expects($this->once())->method('beginTransaction');
+        $pdo->expects($this->once())->method('commit');
+        $pdo->expects($this->never())->method('rollBack');
+
+        $repo->expects($this->once())
+            ->method('create')
+            ->with('Teste Data BR', '2026-03-25')
+            ->willReturn(2);
+
+        $repo->expects($this->once())
+            ->method('getProdutoById')
+            ->with(1)
+            ->willReturn([
+                'id' => 1,
+                'nome' => 'Produto 1',
+                'valor' => 50.0
+            ]);
+
+        $repo->expects($this->once())
+            ->method('addItem')
+            ->with(2, 1, 2, 100.0);
+
+        $repo->expects($this->once())
+            ->method('updateTotal')
+            ->with(2, 100.0);
+
+        $service = new OrcamentoService($repo, $pdo);
+
+        $data = [
+            "nomeCliente" => "Teste Data BR",
+            "data" => "25-03-2026",
+            "itens" => [
+                [
+                    "produto_id" => 1,
+                    "quantidade" => 2
+                ]
+            ]
+        ];
+
+        $id = $service->criarOrcamento($data);
+
+        $this->assertSame(2, $id);
+    }
 }

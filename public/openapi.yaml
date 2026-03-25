@@ -59,7 +59,7 @@ paths:
               $ref: "#/components/schemas/CreateOrcamentoRequest"
             example:
               nomeCliente: Cliente Teste
-              data: 2026-03-23
+              data: 23-03-2026
               itens:
                 - produto_id: 1
                   quantidade: 2
@@ -140,7 +140,7 @@ paths:
               $ref: "#/components/schemas/UpdateOrcamentoRequest"
             example:
               nomeCliente: Cliente Atualizado
-              data: 2026-03-23
+              data: 23-03-2026
               itens:
                 - produto_id: 1
                   quantidade: 1
@@ -319,7 +319,13 @@ components:
           minLength: 1
         data:
           type: string
-          format: date
+          description: >-
+            Data do orcamento. Aceita os formatos DD-MM-AAAA, DD/MM/AAAA
+            e AAAA-MM-DD (ISO).
+          examples:
+            - "23-03-2026"
+            - "23/03/2026"
+            - "2026-03-23"
         itens:
           type: array
           minItems: 1
