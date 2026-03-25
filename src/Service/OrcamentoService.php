@@ -41,32 +41,9 @@ class OrcamentoService {
             throw new ValidationException("Data é obrigatória");
         }
 
-        $this->normalizarDataParaBanco($data['data']);
-
         if (!isset($data['itens']) || !is_array($data['itens']) || count($data['itens']) === 0) {
             throw new ValidationException("É necessário informar ao menos um item");
         }
-    }
-
-    private function normalizarDataParaBanco(string $data): string
-    {
-        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $data) === 1) {
-            return $data;
-        }
-
-        if (preg_match('/^(\d{2})[-\/](\d{2})[-\/](\d{4})$/', $data, $matches) === 1) {
-            $dia = (int) $matches[1];
-            $mes = (int) $matches[2];
-            $ano = (int) $matches[3];
-
-            if (!checkdate($mes, $dia, $ano)) {
-                throw new ValidationException("Data inválida");
-            }
-
-            return sprintf('%04d-%02d-%02d', $ano, $mes, $dia);
-        }
-
-        throw new ValidationException("Data deve estar no formato DD-MM-AAAA, DD/MM/AAAA ou AAAA-MM-DD");
     }
 
     public function criarOrcamento($data) {
@@ -79,7 +56,7 @@ class OrcamentoService {
 
             $orcamentoId = $this->repo->create(
                 $data['nomeCliente'],
-                $this->normalizarDataParaBanco($data['data'])
+                $data['data']
             );
 
             $total = 0;
@@ -247,7 +224,7 @@ class OrcamentoService {
             $this->repo->updateOrcamento(
                 $id,
                 $data['nomeCliente'],
-                $this->normalizarDataParaBanco($data['data'])
+                $data['data']
             );
 
             $this->repo->updateTotal($id, $total);
