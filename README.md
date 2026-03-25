@@ -12,6 +12,18 @@ API REST em PHP para gerenciamento de orcamentos com itens, calculo automatico d
 - ✅ Validações de dados (cliente, data, produtos, quantidade)
 - ✅ Transações ACID (rollback automático em caso de erro)
 
+## ✨ Funcionalidades Extras (Opcional)
+
+O foco deste projeto segue o escopo principal do teste pratico:
+
+- selecionar produtos para compor o orcamento
+- adicionar itens com quantidade e subtotal
+- calcular total antes de salvar
+- persistir orcamento com seus itens
+
+CRUD de produtos (cadastro/edicao/remocao) pode ser tratado como funcionalidade extra,
+nao obrigatoria para validar os requisitos centrais da avaliacao.
+
 ## 🧠 Arquitetura (Backend)
 
 ```
@@ -43,7 +55,7 @@ docker compose up -d
 sleep 20
 docker compose exec php vendor/bin/phinx migrate
 docker compose exec php vendor/bin/phinx seed:run
-docker compose exec php vendor/bin/phpunit
+docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 ```
 
 ## 🌐 Enderecos locais
@@ -87,7 +99,7 @@ Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 
 ## 🏗️ Observacao de infra
 
-Para simplificar o setup do teste, o serviço `php` usa imagem `php:8.4-apache`,
+Para simplificar o setup do teste, o serviço `php` usa imagem `php:8.4.19-apache-trixie`,
 ou seja, Apache + PHP ficam unificados no mesmo container.
 
 Essa abordagem atende ao requisito de infraestrutura (`Web + PHP + MySQL`) via

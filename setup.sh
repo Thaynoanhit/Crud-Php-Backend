@@ -42,7 +42,7 @@ echo ""
 
 # 5. Rodar testes
 echo -e "${BLUE}5️⃣  Executando testes...${NC}"
-docker compose exec php vendor/bin/phpunit
+docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 echo -e "${GREEN}✅ Testes completados${NC}"
 echo ""
 
