@@ -1,16 +1,42 @@
-# 📊 Sistema de Gestão de Orçamentos
+# Sistema de Orcamentos - Backend
 
-API REST em PHP para gerenciar orçamentos com múltiplos itens, cálculo automático de totais e persistência em MySQL.
+API REST em PHP para gerenciamento de orcamentos com itens, calculo automatico de total e persistencia em MySQL.
 
-### Opção Rápida (Recomendado)
+## O que faz
+
+- Criar orcamento com nome do cliente, data e itens
+- Listar produtos para preenchimento do formulario
+- Calcular total automaticamente no backend
+- Listar, buscar, atualizar e deletar orcamentos
+- Paginar e filtrar listagem de orcamentos
+- Validar dados obrigatorios e integridade dos itens
+- Executar transacoes com rollback em caso de erro
+
+## Arquitetura (Backend)
+
+```
+Controller -> Service -> Repository -> Database
+```
+
+- `Controller`: entrada HTTP e serializacao de resposta
+- `Service`: regras de negocio, validacoes e transacoes
+- `Repository`: acesso ao banco via PDO
+
+## Pre-requisitos
+
+- Docker + Docker Compose
+
+## Setup
+
+### Opcao rapida (recomendado)
 
 ```bash
 bash setup.sh
 ```
 
-Tudo será rodado automaticamente: containers, migrations, seeders e testes.
+Sobe containers, aplica migrations, executa seeds e roda testes.
 
-### Opção Manual
+### Opcao manual
 
 ```bash
 docker compose up -d
@@ -20,40 +46,14 @@ docker compose exec php vendor/bin/phinx seed:run
 docker compose exec php vendor/bin/phpunit
 ```
 
-### Acessar a API
+## Enderecos locais
 
-- 📚 **Documentação Interativa:** http://localhost:8000/docs/
-- 📚 **Swagger (alternativo):** http://localhost:8000/docs/swagger.html
-- 📊 **Banco de dados:** http://localhost:8080 (root/root)
-- 🔗 **API:** http://localhost:8000/orcamentos
+- Documentacao interativa: `http://localhost:8000/docs/`
+- Swagger alternativo: `http://localhost:8000/docs/swagger.html`
+- API base: `http://localhost:8000`
+- PhpMyAdmin: `http://localhost:8080` (root/root)
 
----
-
-## 📦 O que faz
-
-- ✅ Criar orçamento com nome do cliente, data e lista de produtos
-- ✅ Listar produtos para preenchimento do formulário
-- ✅ Cálculo automático do total
-- ✅ Listar, buscar, atualizar e deletar orçamentos
-- ✅ Paginação e filtros na listagem de orçamentos
-- ✅ Validações de dados (cliente, data, produtos, quantidade)
-- ✅ Transações ACID (rollback automático em caso de erro)
-
----
-
-## 🧠 Arquitetura
-
-```
-Controller → Service → Repository → Database
-```
-
-- **Controller:** recebe requisições HTTP
-- **Service:** regras de negócio + validações
-- **Repository:** acesso ao banco via PDO
-
----
-
-## 🔒 Validações
+## Validacoes
 
 - Nome do cliente obrigatório
 - Data obrigatória
@@ -61,37 +61,44 @@ Controller → Service → Repository → Database
 - Produto deve existir
 - Quantidade > 0
 
----
+## Testes
 
-## 🧪 Testes
-
-7 testes PHPUnit (Service + integração HTTP):
+8 testes PHPUnit (Service + integração HTTP):
 
 - ✅ Criação com sucesso
 - ✅ Validação de dados inválidos
 - ✅ Produto inexistente
 - ✅ Rollback em erro
 - ✅ Metadados de paginação
+- ✅ Normalização de data BR com hífen
 - ✅ Status HTTP 400 para JSON inválido
 - ✅ Status HTTP 404 para rota inexistente
 
 Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 
----
-
-## ⚙️ Stack
+## Stack
 
 | Componente | Versão            |
 | ---------- | ----------------- |
-| PHP        | 8.4 (Apache)      |
+| PHP        | 8.4               |
 | MySQL      | 8.0               |
 | Phinx      | 0.16 (migrations) |
 | PHPUnit    | 13 (testes)       |
 | Docker     | Compose v2        |
 
----
+## Observacao de infra
 
-## 🚀 Endpoints
+Para simplificar o setup do teste, o serviço `php` usa imagem `php:8.4-apache`,
+ou seja, Apache + PHP ficam unificados no mesmo container.
+
+Essa abordagem atende ao requisito de infraestrutura (`Web + PHP + MySQL`) via
+Docker Compose, com os papéis de `Web` e `PHP` consolidados em um unico servico
+(`php` com Apache embutido) e o `MySQL` em servico dedicado.
+
+Isso mantem o ambiente mais simples para avaliacao local, sem perder os
+requisitos tecnicos do teste.
+
+## Endpoints
 
 | Método | Endpoint         | O quê             |
 | ------ | ---------------- | ----------------- |
@@ -102,7 +109,7 @@ Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 | PUT    | /orcamentos/{id} | Atualizar         |
 | DELETE | /orcamentos/{id} | Deletar           |
 
-Teste via Scalar: http://localhost:8000/docs/
+Documentacao: `http://localhost:8000/docs/`
 
 Observação: o `GET /orcamentos` retorna resultados em ordem crescente (`data_solicitacao ASC, id ASC`).
 
@@ -127,9 +134,7 @@ Exemplo de payload para `POST /orcamentos`:
 }
 ```
 
----
-
-## 🧯 Se algo der errado
+## Troubleshooting
 
 **MySQL ainda inicializando?**
 
@@ -150,7 +155,3 @@ bash setup.sh
 docker compose logs -f php
 docker compose logs -f db
 ```
-
----
-
-**Desenvolvido como teste prático com foco em boas práticas e testes automatizados.**
