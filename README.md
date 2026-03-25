@@ -22,11 +22,11 @@ Controller -> Service -> Repository -> Database
 - `Service`: regras de negocio, validacoes e transacoes
 - `Repository`: acesso ao banco via PDO
 
-## Pre-requisitos
+## ⚙️ Pre-requisitos
 
 - Docker + Docker Compose
 
-## Setup
+## 🚀 Setup
 
 ### Opcao rapida (recomendado)
 
@@ -46,14 +46,14 @@ docker compose exec php vendor/bin/phinx seed:run
 docker compose exec php vendor/bin/phpunit
 ```
 
-## Enderecos locais
+## 🌐 Enderecos locais
 
 - 📚 Documentacao interativa: `http://localhost:8000/docs/`
 - 📚 Swagger alternativo: `http://localhost:8000/docs/swagger.html`
 - 🔗 API base: `http://localhost:8000/orcamentos`
-- 📊PhpMyAdmin: `http://localhost:8080` (root/root)
+- 📊 PhpMyAdmin: `http://localhost:8080` (root/root)
 
-## Validacoes
+## 🔒 Validacoes
 
 - Nome do cliente obrigatório
 - Data obrigatória
@@ -76,7 +76,7 @@ docker compose exec php vendor/bin/phpunit
 
 Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 
-## Stack
+## 🧰 Stack
 
 | Componente | Versão            |
 | ---------- | ----------------- |
@@ -86,7 +86,7 @@ Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 | PHPUnit    | 13 (testes)       |
 | Docker     | Compose v2        |
 
-## Observacao de infra
+## 🏗️ Observacao de infra
 
 Para simplificar o setup do teste, o serviço `php` usa imagem `php:8.4-apache`,
 ou seja, Apache + PHP ficam unificados no mesmo container.
@@ -98,7 +98,7 @@ Docker Compose, com os papéis de `Web` e `PHP` consolidados em um unico servico
 Isso mantem o ambiente mais simples para avaliacao local, sem perder os
 requisitos tecnicos do teste.
 
-## Endpoints
+## 🔗 Endpoints
 
 | Método | Endpoint         | O quê             |
 | ------ | ---------------- | ----------------- |
@@ -134,7 +134,7 @@ Exemplo de payload para `POST /orcamentos`:
 }
 ```
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 **MySQL ainda inicializando?**
 
