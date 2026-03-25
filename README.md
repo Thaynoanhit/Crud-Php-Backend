@@ -63,14 +63,13 @@ docker compose exec php vendor/bin/phpunit
 
 ## 🧪 Testes
 
-8 testes PHPUnit (Service + integração HTTP):
+7 testes PHPUnit (Service + integração HTTP):
 
 - ✅ Criação com sucesso
 - ✅ Validação de dados inválidos
 - ✅ Produto inexistente
 - ✅ Rollback em erro
 - ✅ Metadados de paginação
-- ✅ Normalização de data BR com hífen
 - ✅ Status HTTP 400 para JSON inválido
 - ✅ Status HTTP 404 para rota inexistente
 
