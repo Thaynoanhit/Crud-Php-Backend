@@ -63,6 +63,8 @@ class OrcamentoService {
 
             foreach ($data['itens'] as $item) {
 
+                $this->validarItem($item);
+
                 $produto = $this->repo->getProdutoById($item['produto_id']);
 
                 if (!$produto) {
@@ -209,14 +211,16 @@ class OrcamentoService {
                     throw new NotFoundException("Produto não encontrado");
                 }
 
-                $subtotal = $produto['valor'] * $item['quantidade'];
+                $quantidade = (int) $item['quantidade'];
+                $valor = (float) $produto['valor'];
+                $subtotal = $valor * $quantidade;
 
                 $total += $subtotal;
 
                 $this->repo->addItem(
                     $id,
                     $item['produto_id'],
-                    $item['quantidade'],
+                    $quantidade,
                     $subtotal
                 );
             }

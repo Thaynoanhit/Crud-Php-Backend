@@ -28,20 +28,42 @@ sleep 20
 echo -e "${GREEN}✅ MySQL pronto${NC}"
 echo ""
 
-# 3. Rodar migrations
-echo -e "${BLUE}3️⃣  Rodando migrations...${NC}"
+# 3. Instalar dependencias PHP
+echo -e "${BLUE}3️⃣  Instalando dependências PHP...${NC}"
+if docker compose exec php sh -lc "command -v composer >/dev/null 2>&1"; then
+  docker compose exec php composer install
+else
+  echo "ℹ️  Composer não encontrado no container php. Usando imagem composer:2..."
+  docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$PWD:/app" \
+    -w /app \
+    composer:2 install
+fi
+echo -e "${GREEN}✅ Dependências instaladas${NC}"
+echo ""
+
+# Garante que o Phinx esta disponivel antes de seguir.
+if ! docker compose exec php test -f vendor/bin/phinx; then
+  echo "❌ Erro: vendor/bin/phinx não encontrado no container php."
+  echo "   Verifique se o pacote foi instalado no composer.json/composer.lock."
+  exit 1
+fi
+
+# 4. Rodar migrations
+echo -e "${BLUE}4️⃣  Rodando migrations...${NC}"
 docker compose exec php vendor/bin/phinx migrate
 echo -e "${GREEN}✅ Migrations aplicadas${NC}"
 echo ""
 
-# 4. Rodar seeders
-echo -e "${BLUE}4️⃣  Populando banco de dados...${NC}"
+# 5. Rodar seeders
+echo -e "${BLUE}5️⃣  Populando banco de dados...${NC}"
 docker compose exec php vendor/bin/phinx seed:run
 echo -e "${GREEN}✅ Dados inseridos${NC}"
 echo ""
 
-# 5. Rodar testes
-echo -e "${BLUE}5️⃣  Executando testes...${NC}"
+# 6. Rodar testes
+echo -e "${BLUE}6️⃣  Executando testes...${NC}"
 docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 echo -e "${GREEN}✅ Testes completados${NC}"
 echo ""

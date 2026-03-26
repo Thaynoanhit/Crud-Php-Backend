@@ -75,17 +75,20 @@ docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 
 ## 🧪 Testes
 
-7 testes PHPUnit (Service + integração HTTP):
+**8 testes PHPUnit** (Service + integração HTTP):
 
 - ✅ Criação com sucesso
 - ✅ Validação de dados inválidos
 - ✅ Produto inexistente
-- ✅ Rollback em erro
-- ✅ Metadados de paginação
+- ✅ Rollback em erro (quantidade inválida)
+- ✅ Metadados de paginação coretos
 - ✅ Status HTTP 400 para JSON inválido
 - ✅ Status HTTP 404 para rota inexistente
+- ✅ Validação de item com quantidade > 0
 
 Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
+
+**Resultados:** `8 tests passed (8/8) ✅`
 
 ## 🧰 Stack
 
@@ -145,7 +148,22 @@ Exemplo de payload para `POST /orcamentos`:
 }
 ```
 
-## 🛠️ Troubleshooting
+## � Checklist de validacao manual
+
+**Requisitos Principais:**
+
+1. ✅ API responde em `http://localhost:8000/orcamentos`
+2. ✅ Criar orçamento com cliente, data e itens
+3. ✅ Calcular total automaticamente
+4. ✅ Listar orçamentos com paginação
+5. ✅ Validar campos obrigatórios (cliente, data, itens)
+6. ✅ Retornar 400 para dados inválidos
+7. ✅ Retornar 404 para recurso não encontrado
+8. ✅ Transações ACID (rollback em erro)
+
+**Funcionalidades Extras:** 9. ✅ Editar orçamento existente 10. ✅ Deletar orçamento com cascata de itens 11. ✅ Filtrar por nome do cliente, data início/fim 12. ✅ Documentação OpenAPI em `/docs/` 13. ✅ Swagger UI alternativo em `/docs/swagger.html` 14. ✅ PHPMyAdmin para gerenciar BD em `http://localhost:8080`
+
+## �🛠️ Troubleshooting
 
 **MySQL ainda inicializando?**
 

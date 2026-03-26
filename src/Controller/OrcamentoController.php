@@ -9,6 +9,18 @@ use App\Helpers\ResponseHelper;
 
 class OrcamentoController {
 
+    private function mapExceptionMessage(
+        \Throwable $e,
+        int $status
+    ): string {
+        if ($status >= 500) {
+            error_log($e);
+            return "Erro interno do servidor";
+        }
+
+        return $e->getMessage();
+    }
+
     private function mapExceptionStatus(\Throwable $e): int
     {
         if ($e instanceof ValidationException) {
@@ -42,7 +54,8 @@ class OrcamentoController {
             );
 
         } catch (\Throwable $e) {
-            ResponseHelper::error($e->getMessage(), $this->mapExceptionStatus($e));
+            $status = $this->mapExceptionStatus($e);
+            ResponseHelper::error($this->mapExceptionMessage($e, $status), $status);
         }
     }
 
@@ -51,7 +64,8 @@ class OrcamentoController {
             $service = new OrcamentoService();
             ResponseHelper::success($service->listarOrcamentos($queryParams));
         } catch (\Throwable $e) {
-            ResponseHelper::error($e->getMessage(), $this->mapExceptionStatus($e));
+            $status = $this->mapExceptionStatus($e);
+            ResponseHelper::error($this->mapExceptionMessage($e, $status), $status);
         }
     }
 
@@ -62,7 +76,8 @@ class OrcamentoController {
             ResponseHelper::success($service->buscarPorId($id));
 
         } catch (\Throwable $e) {
-            ResponseHelper::error($e->getMessage(), $this->mapExceptionStatus($e));
+            $status = $this->mapExceptionStatus($e);
+            ResponseHelper::error($this->mapExceptionMessage($e, $status), $status);
         }
     }
 
@@ -80,7 +95,8 @@ class OrcamentoController {
             ResponseHelper::success(null, "Orçamento atualizado");
 
         } catch (\Throwable $e) {
-            ResponseHelper::error($e->getMessage(), $this->mapExceptionStatus($e));
+            $status = $this->mapExceptionStatus($e);
+            ResponseHelper::error($this->mapExceptionMessage($e, $status), $status);
         }
     }
 
@@ -92,7 +108,8 @@ class OrcamentoController {
             ResponseHelper::success(null, "Orçamento deletado");
 
         } catch (\Throwable $e) {
-            ResponseHelper::error($e->getMessage(), $this->mapExceptionStatus($e));
+            $status = $this->mapExceptionStatus($e);
+            ResponseHelper::error($this->mapExceptionMessage($e, $status), $status);
         }
     }
 }

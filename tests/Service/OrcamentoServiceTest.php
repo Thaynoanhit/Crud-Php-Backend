@@ -116,6 +116,42 @@ class OrcamentoServiceTest extends TestCase {
         $service->criarOrcamento($data);
     }
 
+    public function testCriarOrcamentoComQuantidadeInvalidaFazRollback() {
+
+        $repo = $this->createMock(OrcamentoRepository::class);
+        $pdo = $this->createMock(\PDO::class);
+
+        $pdo->expects($this->once())->method('beginTransaction');
+        $pdo->expects($this->once())->method('rollBack');
+        $pdo->expects($this->never())->method('commit');
+
+        $repo->expects($this->once())
+            ->method('create')
+            ->with('Teste', '2026-03-22')
+            ->willReturn(1);
+
+        $repo->expects($this->never())->method('getProdutoById');
+        $repo->expects($this->never())->method('addItem');
+        $repo->expects($this->never())->method('updateTotal');
+
+        $service = new OrcamentoService($repo, $pdo);
+
+        $data = [
+            "nomeCliente" => "Teste",
+            "data" => "2026-03-22",
+            "itens" => [
+                [
+                    "produto_id" => 1,
+                    "quantidade" => 0,
+                ],
+            ],
+        ];
+
+        $this->expectException(ValidationException::class);
+
+        $service->criarOrcamento($data);
+    }
+
     public function testErroFazRollback() {
 
         $repo = $this->createMock(OrcamentoRepository::class);

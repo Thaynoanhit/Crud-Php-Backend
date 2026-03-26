@@ -200,19 +200,25 @@ components:
         success: true
         message: ""
         data:
-          - id: 2
-            nome_cliente: HIT
-            data_solicitacao: "2026-03-22"
-            total: 40
-            itens:
-              - quantidade: 2
-                subtotal: 20
-                produto: Mouse
-                valor: 10
-              - quantidade: 1
-                subtotal: 20
-                produto: Teclado
-                valor: 20
+          data:
+            - id: 2
+              nome_cliente: HIT
+              data_solicitacao: "2026-03-22"
+              total: 40
+              itens:
+                - quantidade: 2
+                  subtotal: 20
+                  produto: Mouse
+                  valor: 10
+                - quantidade: 1
+                  subtotal: 20
+                  produto: Teclado
+                  valor: 20
+          meta:
+            page: 1
+            per_page: 10
+            total: 1
+            total_pages: 1
         error: null
 
     CriarOrcamentoSucesso:
@@ -281,9 +287,9 @@ components:
     ErroInterno:
       value:
         success: false
-        message: SQLSTATE[HY000] [2002] Connection refused
+        message: Erro interno do servidor
         data: null
-        error: SQLSTATE[HY000] [2002] Connection refused
+        error: Erro interno do servidor
 
   parameters:
     IdPathParam:
@@ -412,11 +418,33 @@ components:
           type: string
           example: ""
         data:
-          type: array
-          items:
-            $ref: "#/components/schemas/Orcamento"
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Orcamento"
+            meta:
+              $ref: "#/components/schemas/PaginationMeta"
         error:
           nullable: true
+
+    PaginationMeta:
+      type: object
+      description: Metadados de paginacao da listagem de orcamentos.
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        total_pages:
+          type: integer
+          minimum: 0
 
     SuccessItemResponse:
       type: object

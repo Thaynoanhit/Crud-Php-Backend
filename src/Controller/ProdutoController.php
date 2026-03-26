@@ -7,13 +7,19 @@ use App\Service\ProdutoService;
 
 class ProdutoController
 {
+	private function mapExceptionMessage(\Throwable $e): string
+	{
+		error_log($e);
+		return "Erro interno do servidor";
+	}
+
 	public function index(): void
 	{
 		try {
 			$service = new ProdutoService();
 			ResponseHelper::success($service->listarProdutos());
 		} catch (\Throwable $e) {
-			ResponseHelper::error($e->getMessage(), 500);
+			ResponseHelper::error($this->mapExceptionMessage($e), 500);
 		}
 	}
 }
