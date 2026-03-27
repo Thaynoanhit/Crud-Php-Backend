@@ -75,12 +75,13 @@ docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 
 ## 🧪 Testes
 
-**8 testes PHPUnit** (Service + integração HTTP):
+**9 testes PHPUnit** (Service + integração HTTP):
 
 - ✅ Criação com sucesso
 - ✅ Validação de dados inválidos
 - ✅ Produto inexistente
 - ✅ Rollback em erro (quantidade inválida)
+- ✅ Rollback no update com produto inexistente
 - ✅ Metadados de paginação coretos
 - ✅ Status HTTP 400 para JSON inválido
 - ✅ Status HTTP 404 para rota inexistente
@@ -88,7 +89,7 @@ docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 
 Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 
-**Resultados:** `8 tests passed (8/8) ✅`
+**Resultados:** `9 tests passed (9/9) ✅`
 
 ## 🧰 Stack
 

@@ -46,6 +46,20 @@ class OrcamentoService {
         }
     }
 
+    private function toCents($value): int {
+        return (int) round(((float) $value) * 100);
+    }
+
+    private function fromCents(int $value): float {
+        return round($value / 100, 2);
+    }
+
+    private function rollbackIfNeeded(): void {
+        if ($this->pdo->inTransaction()) {
+            $this->pdo->rollBack();
+        }
+    }
+
     public function criarOrcamento($data) {
 
         $this->validarDadosOrcamento($data);
@@ -59,7 +73,7 @@ class OrcamentoService {
                 $data['data']
             );
 
-            $total = 0;
+            $totalCents = 0;
 
             foreach ($data['itens'] as $item) {
 
@@ -72,9 +86,9 @@ class OrcamentoService {
                 }
 
                 $quantidade = (int) $item['quantidade'];
-                $valor = (float) $produto['valor'];
-
-                $subtotal = $quantidade * $valor;
+                $valorCents = $this->toCents($produto['valor']);
+                $subtotalCents = $quantidade * $valorCents;
+                $subtotal = $this->fromCents($subtotalCents);
 
                 $this->repo->addItem(
                     $orcamentoId,
@@ -83,10 +97,10 @@ class OrcamentoService {
                     $subtotal
                 );
 
-                $total += $subtotal;
+                $totalCents += $subtotalCents;
             }
 
-            $this->repo->updateTotal($orcamentoId, $total);
+            $this->repo->updateTotal($orcamentoId, $this->fromCents($totalCents));
 
             $this->pdo->commit();
 
@@ -94,7 +108,7 @@ class OrcamentoService {
 
         } catch (\Exception $e) {
 
-            $this->pdo->rollBack();
+            $this->rollbackIfNeeded();
             throw $e;
         }
     }
@@ -199,7 +213,7 @@ class OrcamentoService {
 
             $this->repo->deleteItensByOrcamentoId($id);
 
-            $total = 0;
+            $totalCents = 0;
 
             foreach ($data['itens'] as $item) {
 
@@ -212,10 +226,11 @@ class OrcamentoService {
                 }
 
                 $quantidade = (int) $item['quantidade'];
-                $valor = (float) $produto['valor'];
-                $subtotal = $valor * $quantidade;
+                $valorCents = $this->toCents($produto['valor']);
+                $subtotalCents = $quantidade * $valorCents;
+                $subtotal = $this->fromCents($subtotalCents);
 
-                $total += $subtotal;
+                $totalCents += $subtotalCents;
 
                 $this->repo->addItem(
                     $id,
@@ -231,13 +246,13 @@ class OrcamentoService {
                 $data['data']
             );
 
-            $this->repo->updateTotal($id, $total);
+            $this->repo->updateTotal($id, $this->fromCents($totalCents));
 
             $this->pdo->commit();
 
         } catch (\Exception $e) {
 
-            $this->pdo->rollBack();
+            $this->rollbackIfNeeded();
             throw $e;
         }
     }
@@ -258,7 +273,7 @@ class OrcamentoService {
 
         } catch (\Exception $e) {
 
-            $this->pdo->rollBack();
+            $this->rollbackIfNeeded();
             throw $e;
         }
     }

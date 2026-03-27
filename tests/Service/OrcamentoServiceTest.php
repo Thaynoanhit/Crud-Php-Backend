@@ -84,6 +84,7 @@ class OrcamentoServiceTest extends TestCase {
         $pdo = $this->createMock(\PDO::class);
 
         $pdo->expects($this->once())->method('beginTransaction');
+        $pdo->expects($this->once())->method('inTransaction')->willReturn(true);
         $pdo->expects($this->once())->method('rollBack');
         $pdo->expects($this->never())->method('commit');
 
@@ -122,6 +123,7 @@ class OrcamentoServiceTest extends TestCase {
         $pdo = $this->createMock(\PDO::class);
 
         $pdo->expects($this->once())->method('beginTransaction');
+        $pdo->expects($this->once())->method('inTransaction')->willReturn(true);
         $pdo->expects($this->once())->method('rollBack');
         $pdo->expects($this->never())->method('commit');
 
@@ -158,6 +160,7 @@ class OrcamentoServiceTest extends TestCase {
         $pdo = $this->createMock(\PDO::class);
 
         $pdo->expects($this->once())->method('beginTransaction');
+        $pdo->expects($this->once())->method('inTransaction')->willReturn(true);
         $pdo->expects($this->once())->method('rollBack');
         $pdo->expects($this->never())->method('commit');
 
@@ -185,6 +188,57 @@ class OrcamentoServiceTest extends TestCase {
         $this->expectException(\Exception::class);
 
         $service->criarOrcamento($data);
+    }
+
+    public function testAtualizarOrcamentoComProdutoInvalidoFazRollback() {
+
+        $repo = $this->createMock(OrcamentoRepository::class);
+        $pdo = $this->createMock(\PDO::class);
+
+        $pdo->expects($this->once())->method('beginTransaction');
+        $pdo->expects($this->once())->method('inTransaction')->willReturn(true);
+        $pdo->expects($this->once())->method('rollBack');
+        $pdo->expects($this->never())->method('commit');
+
+        $repo->expects($this->once())
+            ->method('getOrcamentoById')
+            ->with(1)
+            ->willReturn([
+                'id' => 1,
+                'nome_cliente' => 'Cliente',
+                'data_solicitacao' => '2026-03-22',
+                'total' => 100.0,
+            ]);
+
+        $repo->expects($this->once())
+            ->method('deleteItensByOrcamentoId')
+            ->with(1);
+
+        $repo->expects($this->once())
+            ->method('getProdutoById')
+            ->with(999)
+            ->willReturn(null);
+
+        $repo->expects($this->never())->method('addItem');
+        $repo->expects($this->never())->method('updateOrcamento');
+        $repo->expects($this->never())->method('updateTotal');
+
+        $service = new OrcamentoService($repo, $pdo);
+
+        $data = [
+            'nomeCliente' => 'Cliente',
+            'data' => '2026-03-22',
+            'itens' => [
+                [
+                    'produto_id' => 999,
+                    'quantidade' => 1,
+                ],
+            ],
+        ];
+
+        $this->expectException(NotFoundException::class);
+
+        $service->atualizarOrcamento(1, $data);
     }
 
     public function testListarOrcamentosComPaginacaoRetornaMeta() {
