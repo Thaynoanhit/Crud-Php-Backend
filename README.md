@@ -1,6 +1,6 @@
 # 📊 Sistema de Gestão de Orçamentos
 
-API REST em PHP para gerenciamento de orcamentos com itens, calculo automatico de total e persistencia em MySQL.
+Backend API REST em PHP para gerenciamento de orcamentos com itens, calculo automatico de total e persistencia em MySQL.
 
 ## 📦 O que faz
 
@@ -24,7 +24,7 @@ O foco deste projeto segue o escopo principal do teste pratico:
 CRUD de produtos (cadastro/edicao/remocao) pode ser tratado como funcionalidade extra,
 nao obrigatoria para validar os requisitos centrais da avaliacao.
 
-## 🧠 Arquitetura (Backend)
+## 🧠 Arquitetura (Backend API)
 
 ```
 Controller -> Service -> Repository -> Database
@@ -58,6 +58,23 @@ docker compose exec php vendor/bin/phinx seed:run
 docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 ```
 
+## 🤖 CI (GitHub Actions)
+
+Este repositorio possui pipeline em `.github/workflows/ci.yml`.
+
+Execucao automatica em:
+
+- `push` para `main`, `develop` e `master`
+- `pull_request`
+
+Etapas do pipeline:
+
+- setup de PHP 8.4
+- validacao de `composer.json`
+- instalacao de dependencias via Composer
+- subida de servidor local para testes de integracao HTTP
+- execucao do PHPUnit
+
 ## 🌐 Enderecos locais
 
 - 📚 Documentacao interativa: `http://localhost:8000/docs/`
@@ -82,7 +99,7 @@ docker compose exec -u "$(id -u):$(id -g)" php vendor/bin/phpunit
 - ✅ Produto inexistente
 - ✅ Rollback em erro (quantidade inválida)
 - ✅ Rollback no update com produto inexistente
-- ✅ Metadados de paginação coretos
+- ✅ Metadados de paginação corretos
 - ✅ Status HTTP 400 para JSON inválido
 - ✅ Status HTTP 404 para rota inexistente
 - ✅ Validação de item com quantidade > 0
@@ -103,7 +120,7 @@ Uso de **mocks** para isolar BD. Rodados automaticamente em `bash setup.sh`.
 
 ## 🏗️ Observacao de infra
 
-Para simplificar o setup do teste, o serviço `php` usa imagem `php:8.4.19-apache-trixie`,
+Para simplificar o setup do teste, o servico `php` usa imagem `php:8.4.19-apache-trixie`,
 ou seja, Apache + PHP ficam unificados no mesmo container.
 
 Essa abordagem atende ao requisito de infraestrutura (`Web + PHP + MySQL`) via
@@ -149,7 +166,7 @@ Exemplo de payload para `POST /orcamentos`:
 }
 ```
 
-## � Checklist de validacao manual
+## 📋 Checklist de validacao manual
 
 **Requisitos Principais:**
 
@@ -162,9 +179,36 @@ Exemplo de payload para `POST /orcamentos`:
 7. ✅ Retornar 404 para recurso não encontrado
 8. ✅ Transações ACID (rollback em erro)
 
-**Funcionalidades Extras:** 9. ✅ Editar orçamento existente 10. ✅ Deletar orçamento com cascata de itens 11. ✅ Filtrar por nome do cliente, data início/fim 12. ✅ Documentação OpenAPI em `/docs/` 13. ✅ Swagger UI alternativo em `/docs/swagger.html` 14. ✅ PHPMyAdmin para gerenciar BD em `http://localhost:8080`
+**Funcionalidades Extras:**
 
-## �🛠️ Troubleshooting
+9. ✅ Editar orçamento existente
+10. ✅ Deletar orçamento com cascata de itens
+11. ✅ Filtrar por nome do cliente, data início/fim
+12. ✅ Documentação OpenAPI em `/docs/`
+13. ✅ Swagger UI alternativo em `/docs/swagger.html`
+14. ✅ PHPMyAdmin para gerenciar BD em `http://localhost:8080`
+
+## 🛠️ Troubleshooting
+
+**Container `php` nao sobe (erro de bind na porta 8000)?**
+
+Se aparecer erro como `address already in use` ao subir o backend (Backend API), a porta `8000` ja esta ocupada por outro processo (ex.: `php -S`) ou outro container.
+
+Diagnostico rapido:
+
+```bash
+lsof -iTCP:8000 -sTCP:LISTEN
+```
+
+Se houver processo local, finalize e suba novamente:
+
+```bash
+kill <PID>
+docker compose up -d php
+docker compose ps
+```
+
+Se preferir, altere o mapeamento de porta no `docker-compose.yml` (ex.: `8001:80`) e acesse pela nova porta.
 
 **MySQL ainda inicializando?**
 
