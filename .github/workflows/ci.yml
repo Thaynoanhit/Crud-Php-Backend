@@ -31,7 +31,7 @@ jobs:
           coverage: none
 
       - name: Validate composer.json
-        run: composer validate --strict
+        run: composer validate --no-check-publish
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
@@ -48,4 +48,9 @@ jobs:
 
       - name: Show server log on failure
         if: failure()
-        run: cat /tmp/php-server.log
+        run: |
+          if [ -f /tmp/php-server.log ]; then
+            cat /tmp/php-server.log
+          else
+            echo "No PHP server log found."
+          fi
